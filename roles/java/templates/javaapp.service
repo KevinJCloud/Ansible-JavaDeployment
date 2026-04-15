@@ -1,0 +1,13 @@
+[Unit]
+Description=Java Application Service
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/java -jar "{{ java_jar_path }}/app.jar"
+SuccessExitStatus=143
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

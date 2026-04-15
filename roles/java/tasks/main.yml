@@ -1,0 +1,79 @@
+---
+- name: Installing java and git
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items: ["openjdk-21-jdk" , "git"]
+
+- name: Create a directory for maven
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items: ["{{ Mvn_path }}", "{{ java_jar_path }}"]
+
+- name: Unarchive a file that needs to be downloaded (added in 2.0)
+  unarchive:
+    src: "https://dlcdn.apache.org/maven/maven-3/{{ Mvn_version }}/binaries/apache-maven-{{ Mvn_version }}-bin.tar.gz"
+    dest: "{{ Mvn_path}}"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+    creates: "{{ Mvn_path }}/bin/mvn"
+
+- name: Template a file to etc/profile.d/maven.sh
+  template:
+    src: maven.sh
+    dest: /etc/profile.d/maven.sh
+
+- name: Creating service file
+  template:
+    src: javaapp.service
+    dest: /etc/systemd/system/javaapp.service
+
+
+- name: daemon reload
+  systemd_service:
+    daemon_reload: true
+
+- name: Starting javaapp service
+  service:
+        name: javaapp.service
+        state: started
+        enabled: true
+
+#cloning the code and build the javaapp
+
+- name: Git checkout
+  git:
+    repo: "{{ git_repo }}"
+    dest: "{{ git_clone_path }}"
+  register: checkout_changed
+
+- name: mvn build
+  shell:
+    cmd: source /etc/profile.d/maven.sh && mvn clean install
+    chdir: "{{ git_clone_path }}"
+    executable: /bin/bash
+  when: checkout_changed.changed
+  register: build_art_status
+
+- name: find the jar file
+  find:
+     paths: "{{ git_clone_path }}/target"
+     patterns: "*.jar"
+  register: myoutput
+
+
+# - name: printing the valure of register
+# debug:
+#   msg: "{{ myoutput.files[0].path }}"
+
+
+- name: copy jar file
+  copy:
+    src: "{{ myoutput.files[0].path }}"
+    dest: "{{ java_jar_path }}/app.jar"
+    remote_src: yes
+  when: build_art_status.changed
+  notify: Restart java app

@@ -1,0 +1,5 @@
+---
+- name: Restart java app
+  systemd:
+    name: javaapp.service
+    state: restarted

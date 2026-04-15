@@ -1,0 +1,6 @@
+---
+
+- name: my java app
+  hosts: server1
+  roles:
+    - java  

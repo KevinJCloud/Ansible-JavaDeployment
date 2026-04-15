@@ -1,0 +1,7 @@
+---
+
+Mvn_version: 3.9.14
+Mvn_path: "/usr/local/apache-maven/apache-maven-{{ Mvn_version}}"
+java_jar_path: /opt/app
+git_repo: https://github.com/shan5a6/javaSpringBoot.git
+git_clone_path: /tmp/javacode 
