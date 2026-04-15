@@ -21,22 +21,8 @@ Features
 
 Project Structure
 
-Ansible-JavaDeployment/
-│
-├── roles/
-│ └── java/
-│ ├── tasks/
-│ │ └── main.yml
-│ ├── handlers/
-│ │ └── main.yml
-│ ├── templates/
-│ │ ├── maven.sh.j2
-│ │ └── javaapp.service.j2
-│ └── vars/
-│ └── main.yml
-│
-├── app.yaml
-└── README.md
+<img width="209" height="280" alt="image" src="https://github.com/user-attachments/assets/61515fe9-d748-45b6-9af0-4a48cb1a1cdc" />
+
 
 
 How to Run
